@@ -1,4 +1,5 @@
 using BaiTap1.DATA;
+using BaiTap1.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 
 var app = builder.Build();
 

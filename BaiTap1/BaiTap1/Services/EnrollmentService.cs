@@ -1,5 +1,5 @@
 ﻿using BaiTap1.DATA;
-using BaiTap1.DTO.Student;
+using BaiTap1.DTO.Enrollment;
 using BaiTap1.Mapper;
 using BaiTap1.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,24 +7,24 @@ using Npgsql;
 
 namespace BaiTap1.Services
 {
-    public class StudentService : IStudentService
+    public class EnrollmentService : IEnrollmentService
     {
         private readonly AppDBContext _context;
 
-        public StudentService(AppDBContext context)
+        public EnrollmentService(AppDBContext context)
         {
             _context = context;
         }
 
-        public async Task<ApiResponse> GetStudentById(int id)
+        public async Task<ApiResponse> GetEnrollmentById(int id)
         {
-            var student = await _context.student.FirstOrDefaultAsync(s => s.id == id);
-            if (student == null)
+            var enrollment = await _context.enrollment.FirstOrDefaultAsync(s => s.enrollmentid == id);
+            if (enrollment == null)
             {
                 return new ApiResponse
                 {
                     Code = 1,
-                    Description = "Không tìm thấy sinh viên",
+                    Description = "Không tìm thấy khóa tuyển sinh",
                     Data = null
                 };
             }
@@ -33,82 +33,82 @@ namespace BaiTap1.Services
             {
                 Code = 0,
                 Description = "Thành công",
-                Data = student
+                Data = enrollment
             };
         }
 
-        public async Task<ApiResponse> GetAllStudents()
+        public async Task<ApiResponse> GetAllEnrollments()
         {
-            var students = await _context.student.ToListAsync();
+            var enrollments = await _context.enrollment.ToListAsync();
             return new ApiResponse
             {
                 Code = 0,
                 Description = "Thành công",
-                Data = students
+                Data = enrollments
             };
         }
 
-        public async Task<ApiResponse> CreateStudent(CreateStudentDTO studentDto)
+        public async Task<ApiResponse> CreateEnrollment(CreateEnrollmentDTO enrollmentDto)
         {
-            var newStudent = studentDto.ToStudentFromDTO();
+            var newEnrollment = enrollmentDto.ToEnrollmentFromDTO();
 
-            await _context.student.AddAsync(newStudent);
+            await _context.enrollment.AddAsync(newEnrollment);
             await _context.SaveChangesAsync();
 
             return new ApiResponse
             {
                 Code = 0,
-                Description = "Thêm sinh viên thành công",
-                Data = newStudent.ToStudentDTO()
+                Description = "Tạo khóa tuyển sinh thành công",
+                Data = newEnrollment.ToEnrollmentDTO()
             };
         }
 
-        public async Task<ApiResponse> UpdateStudent(int id, UpdateStudentDTO studentDto)
+        public async Task<ApiResponse> UpdateEnrollment(int id, UpdateEnrollmentDTO enrollmentDto)
         {
-            var exStudent = await _context.student.FirstOrDefaultAsync(s => s.id == id);
-            if (exStudent == null)
+            var exEnrollment = await _context.enrollment.FirstOrDefaultAsync(s => s.enrollmentid == id);
+            if (exEnrollment == null)
             {
                 return new ApiResponse
                 {
                     Code = 1,
-                    Description = "Không tìm thấy sinh viên để cập nhật",
+                    Description = "Không tìm thấy khóa tuyển sinh để cập nhật",
                     Data = null
                 };
             }
 
-            exStudent.lastname = studentDto.lastname;
-            exStudent.firstmidname = studentDto.firstmidname;
-            exStudent.enrollmentdate = studentDto.enrollmentdate.ToUniversalTime();
+            exEnrollment.courseid = enrollmentDto.courseid;
+            exEnrollment.studentid = enrollmentDto.studentid;
+            exEnrollment.grade = enrollmentDto.grade;
 
             await _context.SaveChangesAsync();
             return new ApiResponse
             {
                 Code = 0,
-                Description = "Cập nhật sinh viên thành công",
-                Data = exStudent.ToStudentDTO()
+                Description = "Cập nhật khóa tuyển sinh thành công",
+                Data = exEnrollment.ToEnrollmentDTO()
             };
         }
 
-        public async Task<ApiResponse> DeleteStudent(int id)
+        public async Task<ApiResponse> DeleteEnrollment(int id)
         {
-            var student = await _context.student.FirstOrDefaultAsync(s => s.id == id);
-            if (student == null)
+            var enrollment = await _context.enrollment.FirstOrDefaultAsync(s => s.enrollmentid == id);
+            if (enrollment == null)
             {
                 return new ApiResponse
                 {
                     Code = 1,
-                    Description = "Không tìm thấy sinh viên để xóa",
+                    Description = "Không tìm thấy khóa tuyển sinh để xóa",
                     Data = null
                 };
             }
             try
             {
-                _context.student.Remove(student);
+                _context.enrollment.Remove(enrollment);
                 await _context.SaveChangesAsync();
                 return new ApiResponse
                 {
                     Code = 0,
-                    Description = "Xóa sinh viên thành công",
+                    Description = "Xóa khóa tuyển sinh thành công",
                     Data = null
                 };
             }
@@ -117,7 +117,7 @@ namespace BaiTap1.Services
                 return new ApiResponse
                 {
                     Code = 1,
-                    Description = "Không thể xóa sinh viên vì tồn tại ràng buộc khóa ngoại",
+                    Description = "Không thể xóa khóa tuyển sinh vì tồn tại ràng buộc khóa ngoại",
                     Data = null
                 };
             }

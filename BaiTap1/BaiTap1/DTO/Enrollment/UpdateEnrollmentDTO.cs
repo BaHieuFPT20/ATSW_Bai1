@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace BaiTap1.Models
+namespace BaiTap1.DTO.Enrollment
 {
-    public class enrollment
+    public class UpdateEnrollmentDTO
     {
         [Key]
         public int enrollmentid { get; set; }
@@ -17,9 +17,5 @@ namespace BaiTap1.Models
         public int studentid { get; set; }
 
         public string grade { get; set; }
-
-        // Thuộc tính điều hướng (Navigation Properties)
-        public course course { get; set; }
-        public student student { get; set; }
     }
 }

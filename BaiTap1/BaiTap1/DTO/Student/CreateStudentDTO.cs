@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BaiTap1.Models
+namespace BaiTap1.DTO.Student
 {
-    public class student
+    public class CreateStudentDTO
     {
-        [Key]
-        public int id { get; set; }
-
         [Required]
         [StringLength(50)]
         public string lastname { get; set; }
@@ -17,8 +14,5 @@ namespace BaiTap1.Models
 
         [DataType(DataType.Date)]
         public DateTime enrollmentdate { get; set; }
-
-        // Quan hệ 1 - N với Enrollment
-        public ICollection<enrollment> enrollments { get; set; }
     }
 }
