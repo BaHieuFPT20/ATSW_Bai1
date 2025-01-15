@@ -4,6 +4,7 @@ using BaiTap1.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BaiTap1.DTO.Course;
 
 namespace BaiTap1.Controllers
 {
@@ -19,14 +20,14 @@ namespace BaiTap1.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
+        public async Task<IActionResult> GetAllCourses()
         {
-            var courses = await _courseService.GetAllCoursesAsync();
+            var courses = await _courseService.GetAllCourseAsync();
             return Ok(courses);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Course>> GetCourse(int id)
+        public async Task<IActionResult> GetByIdCourse(int id)
         {
             var course = await _courseService.GetCourseByIdAsync(id);
             if (course == null)
@@ -37,39 +38,32 @@ namespace BaiTap1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Course>> CreateCourse([FromBody] Course course)
+        public async Task<IActionResult> CreateCourse(CreateCourseDTO createCourseDTO)
         {
-            var createdCourse = await _courseService.CreateCourseAsync(course);
-            return CreatedAtAction(nameof(GetCourse), new { id = createdCourse.CourseID }, createdCourse);
+            var createdCourse = await _courseService.CreateCourseAsync(createCourseDTO);
+            return CreatedAtAction(nameof(GetByIdCourse), new { id = createdCourse.Id }, createdCourse);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCourse(int id, [FromBody] Course course)
+        public async Task<IActionResult> UpdateCourse(int id, UpdateCourseDTO updateCourseDTO)
         {
-            if (id != course.CourseID)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("ID khóa học không khớp.");
+                return BadRequest( new ResponAPI { Id = 1, Description = "Dữ liệu không hợp lệ", Data = null });
             }
-
-            var updatedCourse = await _courseService.UpdateCourseByIdAsync(id, course);
-            if (updatedCourse == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var updatedCourse = await _courseService.UpdateCourseByIdAsync(id, updateCourseDTO);
+            return Ok(updateCourseDTO);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
-            var result = await _courseService.DeleteCourseByIdAsync(id);
-            if (!result)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(new ResponAPI { Id = 1, Description = "Dữ liệu không hợp lệ", Data = null });
             }
-
-            return NoContent();
+            var result = await _courseService.DeleteCourseByIdAsync(id);
+            return Ok(result);
         }
     }
 }

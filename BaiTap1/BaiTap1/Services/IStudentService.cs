@@ -1,13 +1,15 @@
-﻿using BaiTap1.Models;
+﻿using BaiTap1.DTO.Enrollment;
+using BaiTap1.DTO.Student;
+using BaiTap1.Models;
 
 namespace BaiTap1.Services
 {
     public interface IStudentService
     {
-        Task<IEnumerable<Student>> GetAllStudentAsync();
-        Task<Student> GetStudentByIdAsync(int studentId);
-        Task<Student> CreateStudentAsync(Student student);
-        Task<Student> UpdateStudentByIdAsync(int studentId, Student student);
-        Task<bool> DeleteStudentByIdAsync(int studentId);
+        Task<ResponAPI> GetAllStudentAsync();
+        Task<ResponAPI> GetStudentByIdAsync(int studentId);
+        Task<ResponAPI> CreateStudentAsync(CreateStudentDTO createStudentDTO);
+        Task<ResponAPI> UpdateStudentByIdAsync(int studentId, UpdateStudentDTO updateStudentDTO);
+        Task<ResponAPI> DeleteStudentByIdAsync(int studentId);
     }
 }

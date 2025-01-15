@@ -1,13 +1,15 @@
-﻿using BaiTap1.Models;
+﻿using BaiTap1.DTO.Course;
+using BaiTap1.DTO.Enrollment;
+using BaiTap1.Models;
 
 namespace BaiTap1.Services
 {
     public interface IEnrollmentService
     {
-        Task<IEnumerable<Enrollment>> GetAllEnrollmentAsync();
-        Task<Enrollment> GetEnrollmentByIdAsync(int enrollmentId);
-        Task<Enrollment> CreateEnrollmentAsync(Enrollment enrollment);
-        Task<Enrollment> UpdateEnrollmentByIdAsync(int enrollmentId, Enrollment enrollment);
-        Task<bool> DeleteEnrollmentByIdAsync(int enrollmentId);
+        Task<ResponAPI> GetAllEnrollmentAsync();
+        Task<ResponAPI> GetEnrollmentByIdAsync(int enrollmentId);
+        Task<ResponAPI> CreateEnrollmentAsync(CreateEnrollmentDTO createEnrollmentDTO);
+        Task<ResponAPI> UpdateEnrollmentByIdAsync(int enrollmentId, UpdateEnrollmentDTO updateEnrollmentDTO);
+        Task<ResponAPI> DeleteEnrollmentByIdAsync(int enrollmentId);
     }
 }

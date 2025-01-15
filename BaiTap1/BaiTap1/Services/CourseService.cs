@@ -1,6 +1,10 @@
 ﻿using BaiTap1.DATA;
+using BaiTap1.DTO.Course;
 using BaiTap1.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Npgsql.Internal.TypeHandlers.NetworkHandlers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,47 +18,87 @@ namespace BaiTap1.Services
         { 
             _db = db;
         }
-        public async Task<IEnumerable<Course>> GetAllCoursesAsync()
+        public async Task<ResponAPI> GetAllCourseAsync()
         {
-            return await _db.Courses.ToListAsync();
+            var courses = await _db.course.ToListAsync();
+                return new ResponAPI { Id = 0, Description = "Tìm thấy khóa học thành công", Data = courses };
         }
 
-        public async Task<Course> GetCourseByIdAsync(int courseId)
+        public async Task<ResponAPI> GetCourseByIdAsync(int courseId)
         {
-            return await _db.Courses.FirstOrDefaultAsync(c => c.CourseID == courseId);
+            var course = await _db.course.FindAsync(courseId);
+            if (course == null)
+            {
+                return new ResponAPI { Id = 1, Description = "Không tìm thấy khóa học", Data = null };
+            }
+
+            var courseDTO = new CourseDTO
+            {
+                CourseID = course.courseid,
+                Title = course.title,
+                Credits = course.credits
+            };
+
+            return new ResponAPI { Id = 0, Description = "Tìm thấy khoá học thành công", Data = courseDTO };
         }
 
-        public async Task<Course> CreateCourseAsync(Course course)
+        public async Task<ResponAPI> CreateCourseAsync(CreateCourseDTO courseDTO)
         {
-            _db.Courses.Add(course);
+            var course = new course
+            {
+                title = courseDTO.Title,
+                credits = courseDTO.Credits
+            };
+
+            _db.course.Add(course);
             await _db.SaveChangesAsync();
-            return course;
+
+            return new ResponAPI 
+            { Id = 0, Description = "Thêm mới khóa học thành công", Data = course };
         }
 
-        public async Task<Course> UpdateCourseByIdAsync(int courseId, Course course)
+        public async Task<ResponAPI> UpdateCourseByIdAsync(int courseId, UpdateCourseDTO courseDTO)
         {
-            var existingCourse = await _db.Courses.FirstOrDefaultAsync(c => c.CourseID == courseId);
-            if (existingCourse != null)
+            var course = await _db.course.FindAsync(courseId);
+            if (course == null)
             {
-                existingCourse.Title = course.Title;
-                existingCourse.Credits = course.Credits;
-
-                _db.Courses.Update(existingCourse);
-                await _db.SaveChangesAsync();
+                return new ResponAPI { Id = 1, Description = "Không tìm thấy khóa học", Data = null };
             }
-            return existingCourse;
+
+            course.title = courseDTO.Title;
+            course.credits = courseDTO.Credits;
+
+            _db.course.Update(course);
+            await _db.SaveChangesAsync();
+
+            return new ResponAPI { Id = 0, Description = "Cập nhật khóa học thành công", Data = course };
         }
 
-        public async Task<bool> DeleteCourseByIdAsync(int courseId)
+        public async Task<ResponAPI> DeleteCourseByIdAsync(int courseId)
         {
-            var course = await _db.Courses.FirstOrDefaultAsync(c => c.CourseID == courseId);
-            if (course != null)
+            var course = await _db.course.FindAsync(courseId);
+            if (course == null)
             {
-                _db.Courses.Remove(course);
-                await _db.SaveChangesAsync();
-                return true;
+                return new ResponAPI { Id = 1, Description = "Lỗi khi xóa khóa học", Data = null };
             }
-            return false;
+
+            try
+            {
+                _db.course.Remove(course);
+                await _db.SaveChangesAsync();
+
+                return new ResponAPI { Id = 0, Description = "Xóa khóa học thành công", Data = course };
+            }
+            catch (DbUpdateException ex)
+            {
+                // Kiểm tra xem lỗi có liên quan đến khóa ngoại không
+                if (ex.InnerException?.Message.Contains("Ràng buộc khóa ngoại không thành công") ?? false)
+                {
+                    return new ResponAPI { Id = 1, Description = "Không thể xóa khóa học vì nó có dữ liệu liên quan", Data = null };
+                }
+                // Xử lý các lỗi khác nếu cần thiết
+                return new ResponAPI { Id = 1, Description = "Lỗi khi xóa khóa học", Data = null };
+            }
         }
     }
 }

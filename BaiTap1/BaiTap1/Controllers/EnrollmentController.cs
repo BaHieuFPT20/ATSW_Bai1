@@ -1,4 +1,7 @@
-﻿using BaiTap1.Models;
+﻿using BaiTap1.DTO.Course;
+using BaiTap1.DTO.Enrollment;
+using BaiTap1.Mapper;
+using BaiTap1.Models;
 using BaiTap1.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +18,15 @@ namespace BaiTap1.Controllers
         {
             _enrollmentService = enrollmentService;
         }
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Enrollment>>> GetAllEnrollment()
+        public async Task<IActionResult> GetAllEnrollment()
         {
             var enrollments = await _enrollmentService.GetAllEnrollmentAsync();
             return Ok(enrollments);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Enrollment>> GetEnrollmentById(int id)
+        public async Task<IActionResult> GetByIdEnrollment(int id)
         {
             var enrollment = await _enrollmentService.GetEnrollmentByIdAsync(id);
             if (enrollment == null)
@@ -35,39 +37,32 @@ namespace BaiTap1.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Enrollment>> CreateCourse([FromBody] Enrollment enrollment)
+        public async Task<IActionResult> CreateEnrollment(CreateEnrollmentDTO enrollmentDTO)
         {
-            var createEnrollment = await _enrollmentService.CreateEnrollmentAsync(enrollment);
-            return CreatedAtAction(nameof(GetEnrollmentById), new { id = createEnrollment.EnrollmentID }, createEnrollment);
+            var createEnrollment = await _enrollmentService.CreateEnrollmentAsync(enrollmentDTO);
+            return CreatedAtAction(nameof(GetByIdEnrollment), new { id = createEnrollment.Id }, createEnrollment);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEnrollment(int id, [FromBody] Enrollment enrollment)
+        public async Task<IActionResult> UpdateEnrollment(int id, UpdateEnrollmentDTO updateEnrollmentDTO)
         {
-            if (id != enrollment.EnrollmentID)
+            if (!ModelState.IsValid)
             {
-                return BadRequest("ID tuyển sinh không khớp.");
+                return BadRequest(new ResponAPI { Id = 1, Description = "Dữ liệu không hợp lệ", Data = null });
             }
-
-            var updateEnrollment = await _enrollmentService.UpdateEnrollmentByIdAsync(id, enrollment);
-            if (updateEnrollment == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var updatedCourse = await _enrollmentService.UpdateEnrollmentByIdAsync(id, updateEnrollmentDTO);
+            return Ok(updateEnrollmentDTO);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEnrollment(int id)
         {
-            var result = await _enrollmentService.DeleteEnrollmentByIdAsync(id);
-            if (!result)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(new ResponAPI { Id = 1, Description = "Dữ liệu không hợp lệ", Data = null });
             }
-
-            return NoContent();
+            var result = await _enrollmentService.DeleteEnrollmentByIdAsync(id);
+            return Ok(result);
         }
     }
 }

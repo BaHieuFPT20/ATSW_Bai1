@@ -3,23 +3,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BaiTap1.Models
 {
-    public class Enrollment
+    public class enrollment
     {
         [Key]
-        public int EnrollmentID { get; set; }
+        public int enrollmentid { get; set; }
 
         // Khóa ngoại liên kết với Course
         [ForeignKey("Course")]
-        public int CourseID { get; set; }
+        public int courseid { get; set; }
 
         // Khóa ngoại liên kết với Student
         [ForeignKey("Student")]
-        public int StudentID { get; set; }
+        public int studentid { get; set; }
 
-        public string Grade { get; set; }
+        public string grade { get; set; }
 
         // Thuộc tính điều hướng (Navigation Properties)
-        public Course Course { get; set; }
-        public Student Student { get; set; }
+        public course course { get; set; }
+        public student student { get; set; }
     }
 }

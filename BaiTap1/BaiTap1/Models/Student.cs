@@ -2,23 +2,23 @@
 
 namespace BaiTap1.Models
 {
-    public class Student
+    public class student
     {
         [Key]
-        public int ID { get; set; }
+        public int id { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string LastName { get; set; }
+        public string lastname { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string FirstMidName { get; set; }
+        public string firstmidname { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime EnrollmentDate { get; set; }
+        public DateTime enrollmentdate { get; set; }
 
         // Quan hệ 1 - N với Enrollment
-        public ICollection<Enrollment> Enrollments { get; set; }
+        public ICollection<enrollment> enrollments { get; set; }
     }
 }
