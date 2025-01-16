@@ -1,0 +1,6 @@
+services:
+  baitap1:
+    image: ${DOCKER_REGISTRY-}baitap1
+    build:
+      context: .
+      dockerfile: BaiTap1/Dockerfile

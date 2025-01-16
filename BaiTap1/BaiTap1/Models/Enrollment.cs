@@ -21,5 +21,16 @@ namespace BaiTap1.Models
         // Thuộc tính điều hướng (Navigation Properties)
         public Course Course { get; set; }
         public Student Student { get; set; }
+
+        //public Enrollment() { }
+        //public Enrollment(int enrollmentID, int courseID, int studentID, string grade, Course course, Student student)
+        //{
+        //    EnrollmentID = enrollmentID;
+        //    CourseID = courseID;
+        //    StudentID = studentID;
+        //    Grade = grade;
+        //    Course = course;
+        //    Student = student;
+        //}
     }
 }

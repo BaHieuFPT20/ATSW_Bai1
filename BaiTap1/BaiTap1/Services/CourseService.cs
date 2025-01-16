@@ -1,16 +1,15 @@
 ﻿using BaiTap1.DATA;
 using BaiTap1.DTOs;
-using BaiTap1.DTOs.Student;
+using BaiTap1.DTOs.Course;
 using BaiTap1.Mappers;
 using Microsoft.EntityFrameworkCore;
-
 namespace BaiTap1.Services
 {
-    public class StudentService : IStudentService
+    public class CourseService : ICourseService
     {
         private readonly AppDBContext _appDbContext;
 
-        public StudentService(AppDBContext appDbContext)
+        public CourseService(AppDBContext appDbContext)
         {
             _appDbContext = appDbContext;
         }
@@ -18,109 +17,102 @@ namespace BaiTap1.Services
         public async Task<ApiResponse> GetAll()
         {
             ApiResponse response = new ApiResponse();
-            var students = await _appDbContext.Students.ToListAsync();
-            var studentDTOs = students.Select(student => StudentMapper.ToStudentDTO(student));
-            if (students.Count > 0)
+            var courses = await _appDbContext.Courses.ToListAsync();
+            var courseDTOs = courses.Select(course => CourseMapper.ToCourseDTO(course));
+            if (courses.Count > 0)
             {
-                response.description = studentDTOs;
+                response.description = courseDTOs;
             }
             else
             {
                 response.code = 1;
-                response.description = "No student found.";
+                response.description = "No courses found.";
             }
             return response;
         }
+
 
         public async Task<ApiResponse> GetById(int id)
         {
             ApiResponse response = new ApiResponse();
-            var student = _appDbContext.Students.Find(id);
-            if (student != null)
+            var courses = await _appDbContext.Courses.FindAsync(id);
+            if (courses != null)
             {
-                response.description = StudentMapper.ToStudentDTO(student);
+                response.description = CourseMapper.ToCourseDTO(courses);
             }
             else
             {
                 response.code = 1;
-                response.description = "No Student found.";
+                response.description = "No courses found.";
             }
             return response;
         }
-
-
-        public async Task<ApiResponse> CreateStudent(CreateStudentDTO create)
+        public async Task<ApiResponse> CreateCourse(CreateCourseDTO create)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var student = StudentMapper.ToCreateStudentDTO(create);
-
+                var course = CourseMapper.ToCourseFromCreateCourseDTO(create);
                 // Thêm course mới vào cơ sở dữ liệu
-                _appDbContext.Students.Add(student);
+                _appDbContext.Courses.Add(course);
                 await _appDbContext.SaveChangesAsync();
 
                 response.code = 0;
-                response.description = "Student created successfully.";
-            }
-            catch (DbUpdateException dbEx)
-            {
-                // Đặc biệt xử lý lỗi liên quan đến cơ sở dữ liệu
-                response.code = 1;
-                response.description = $"Database error: {dbEx.Message}";
+                response.description = "Course created successfully.";
             }
             catch (Exception ex)
             {
-                // Xử lý tất cả các loại lỗi khác
                 response.code = 1;
                 response.description = $"Error: {ex.Message}";
             }
             return response;
         }
 
-        public async Task<ApiResponse> UpdateStudent(int id, UpdateStudentDTO update)
+        public async Task<ApiResponse> UpdateCourse(int id, UpdateCourseDTO update)
         {
             ApiResponse response = new ApiResponse();
             try
             {
-                var student = _appDbContext.Students.Find(id);
-                if (student == null)
+                var course = await _appDbContext.Courses.FindAsync(id);
+                if (course == null)
                 {
                     response.code = 1;
-                    response.description = "Student not found.";
-
+                    response.description = "Course not found.";
                 }
                 else
                 {
+                    // Cập nhật thông tin khóa học
+                    course.Title = update.Title;
+                    course.Credits = update.Credits;
 
-                    student.EnrollmentDate = update.EnrollmentDate;
-                    student.FirstMidName = update.FirstMidName;
-                    student.LastName = update.LastName;
+                    // Lưu thay đổi vào cơ sở dữ liệu
                     await _appDbContext.SaveChangesAsync();
 
                     response.code = 0;
-                    response.description = "Student updated successfully.";
+                    response.description = "Course updated successfully.";
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 response.code = 1;
-                response.description = $"Error: {e.Message}";
+                response.description = $"Error: {ex.Message}";
             }
             return response;
         }
-        public async Task<ApiResponse> DeleteStudent(int id)
+
+
+        public async Task<ApiResponse> DeleteCourse(int id)
         {
             ApiResponse response = new ApiResponse();
-            var student = _appDbContext.Students.Find(id);
-            if (student != null)
+            var course = _appDbContext.Courses.Find(id);
+            if (course != null)
             {
                 try
                 {
-                    _appDbContext.Remove(student);
+                    _appDbContext.Remove(course);
                    await _appDbContext.SaveChangesAsync();
                     response.code = 0;
-                    response.description = "Delete student successfully.";
+                    response.description = "Delete course successfully.";
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +123,10 @@ namespace BaiTap1.Services
             else
             {
                 response.code = 1;
-                response.description = "No student found.";
+                response.description = "No courses found.";
             }
             return response;
         }
+
     }
 }

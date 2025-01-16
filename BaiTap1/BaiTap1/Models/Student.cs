@@ -20,5 +20,15 @@ namespace BaiTap1.Models
 
         // Quan hệ 1 - N với Enrollment
         public ICollection<Enrollment> Enrollments { get; set; }
+
+        //public Student() { }
+        //public Student(int iD, string lastName, string firstMidName, DateTime enrollmentDate, ICollection<Enrollment> enrollments)
+        //{
+        //    ID = iD;
+        //    LastName = lastName;
+        //    FirstMidName = firstMidName;
+        //    EnrollmentDate = enrollmentDate;
+        //    Enrollments = enrollments;
+        //}
     }
 }
