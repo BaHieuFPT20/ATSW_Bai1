@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  yourprojectname:
+    image: ${DOCKER_REGISTRY-}baitap1
+    build:
+      context: .
+      dockerfile: BaiTap1/Dockerfile
+    ports:
+      - "32768:80"

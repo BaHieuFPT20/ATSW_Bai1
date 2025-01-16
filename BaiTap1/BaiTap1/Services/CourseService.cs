@@ -79,7 +79,7 @@ namespace BaiTap1.Services
             var course = await _db.course.FindAsync(courseId);
             if (course == null)
             {
-                return new ResponAPI { Id = 1, Description = "Lỗi khi xóa khóa học", Data = null };
+                return new ResponAPI { Id = 1, Description = "Không tìm thấy khóa học", Data = null };
             }
 
             try

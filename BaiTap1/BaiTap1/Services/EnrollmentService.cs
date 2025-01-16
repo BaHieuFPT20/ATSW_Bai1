@@ -77,7 +77,7 @@ namespace BaiTap1.Services
             var enrollment = await _db.enrollment.FindAsync(enrollmentId);
             if (enrollment == null)
             {
-                return new ResponAPI { Id = 1, Description = "Lỗi khi xóa tuyển sinh", Data = null };
+                return new ResponAPI { Id = 1, Description = "Không tìm thấy khóa tuyển sinh", Data = null };
             }
 
             try
